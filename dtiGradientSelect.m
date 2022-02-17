@@ -16,12 +16,11 @@ disp('Next, you are going to select the csv file containing the problematic grad
 grad = regexp(fileread([p f]),'[\n\r]+','split');
 grad = cellfun(@(s)sscanf(s,'%f,').', grad, 'UniformOutput',false);
 
-
 for i = 1:size(D,1)
     ee = strrep(fold1(1:kn),sub1,D(i).name);
     mkdir([ee '/dtiQCed']);
     ff = strrep(fold1,sub1,D(i).name);
-    if i <= (size(grad,2));
+    if i <= (size(grad,2)) % this is for cases where the last subs may not have any bad gradients
         s = grad{1,i}+1;
     else
         s = [];
@@ -37,7 +36,3 @@ for i = 1:size(D,1)
        clear x y
     end
 end
-
-% else
-%     disp('number of subjects as indicated by bad gradients list, is different than number of subject directories')
-% end
