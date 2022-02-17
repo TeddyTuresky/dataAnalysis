@@ -4,6 +4,7 @@ clearvars; clc; close all;
 % to send the sorted files. This script is specific to the file structure:
  
 %           subject/DICOM/session/subsession/files'
+%           subjectID/RAW/files
 
 % For questions, please contact theodore.turesky@childrens.harvard.edu,
 % 2019
@@ -19,7 +20,7 @@ nsub = length(sub);
 
 
 for i = 1:nsub
-    a{i} = strsplit(strtrim(ls('-d',[sub{i} 'DICOM/*/*/*'])),{'\t','\n'});
+    a{i} = strsplit(strtrim(ls('-d',[sub{i} '/RAW/*'])),{'\t','\n'});
     numa(i,1) = size(a{i},2);
     mkdir(dep,sub{i});
         

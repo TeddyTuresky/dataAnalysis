@@ -3,8 +3,8 @@ clearvars; close all; clc;
 % Adapted from here: http://yeatmanlab.github.io/AFQ/tutorials/AFQ_example
 
 
-paths = importTextList('../paths4dti.txt'); % input text file with paths
-thres = '015_015_40_spm_noVistaNoPrep'; % specify parameters for naming output
+paths = importTextList('paths4dti.txt'); % input text file with paths
+thres = '015_015_40_spm'; % specify parameters for naming output
 
 % paths = {};
 % paths{1,1} = '/Users/cinnamon/Documents/dti2114-2/2114/dtitrilin';
