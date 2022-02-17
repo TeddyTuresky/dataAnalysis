@@ -1,6 +1,6 @@
-clear all; close all; clc
+clearvars; close all; clc
 step = '/Volumes/FunTown/allAnalyses/BangRS/processing/05smoothTemp.mat';
-subs = '/Volumes/FunTown/allAnalyses/BangRS/processing/sub_list.mat';
+subs = '/Volumes/FunTown/allAnalyses/BangRS/processing/sub_list.mat'; % character array of subject IDs: n x 4-character subject ID 
 
 
 n_img = 195; % number of volumes to be sliced

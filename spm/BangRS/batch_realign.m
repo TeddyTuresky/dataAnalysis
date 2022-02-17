@@ -1,9 +1,9 @@
-clear all; close all; clc
-step = '/Volumes/FunTown/allAnalyses/BangRS/processing/02realignTemp.mat';
-subs = '/Volumes/FunTown/allAnalyses/BangRS/processing/sub_list.mat';
+clearvars; close all; clc
+step = '/Volumes/DMC-Gaab2/data/Bangladesh/Upper_class_data/processing/02realignTemp.mat';
+subs = '/Volumes/DMC-Gaab2/data/Bangladesh/Upper_class_data/processing/sublistHI-red.mat'; % character array of subject IDs: n x 4-character subject ID 
 
 
-n_img = 195; % number of volumes to be sliced
+n_img = 195; % number of volumes to be sliced, discarded first 10 vols
 
 
 load(subs);

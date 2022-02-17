@@ -5,17 +5,13 @@ set(0,'DefaultFigureVisible','off')
 % accommodate X11 forwarding.
 % for questions: theodore.turesky@childrens.harvard.edu,2018
 
-
-dep1 = '/Volumes/DMC-Gaab2/data/Bangladesh/5yrCrypto/3349'; % destination
-
+dirh = '/Volumes/DMC-Gaab2/data/Bangladesh/5yrProvide';
 
 
 addpath(genpath('/Volumes/DMC-Gaab2/tools/tkt_tools/BEAN'));
 addpath('/Volumes/DMC-Gaab2/tools/tkt_tools');
 addpath('/Volumes/DMC-Gaab2/tools/tkt_tools/spm12');
 addpath('/Volumes/DMC-Gaab2/tools/tkt_tools/dicom_toolbox_version_2e');
-
-
 
 
 stepT1 = '/Volumes/DMC-Gaab2/tools/tkt_tools/BEAN/spmBatches/cattemp.mat';
@@ -26,36 +22,13 @@ levGNG = '/Volumes/DMC-Gaab2/tools/tkt_tools/BEAN/spmBatches/GNG1lev.mat';
 levLSM = '/Volumes/DMC-Gaab2/tools/tkt_tools/BEAN/spmBatches/LSM1lev.mat';
 levSTORY = '/Volumes/DMC-Gaab2/tools/tkt_tools/BEAN/spmBatches/STORY1lev.mat';
 
-dep2 = '/Volumes/DMC-Gaab2/data/Bangladesh/jen/BEAN'; % to copy for neuroradiologist
+
 
 align = '/Volumes/DMC-Gaab2/tools/tkt_tools/spm12/toolbox/cat12/templates_1.50mm/brainmask.nii';
 %==========================================================================
 
-fprintf(['This script receives, sorts, and processes raw dicom files for ', ...
-'individual BEAN subjects. The following conditions must be accepted prior ',...
-'to running: \n',...
-'\n1. Output to "dep1" directory as directory containing dicom files.',...
-'\n2. Please skip GNG first-level stats if log files do not contain 1s or 2s, ',...
-'or if accuracy=1.',...
-'\n3. All GNG log files are in .xls or .xlsx format with no other changes.',...
-'\n4. Your account has permission to open all GNG log files.',...
-'\n5. Please ensure log files do not contain "GNG" "LSM" "STORY" or "WM".',...
-'\n6. Motion artifact detection relies on (0.75mm) RMS distance rather than ',...
-'individual rigid body parameters. This can be changed upon request.',... 
-'\n7. Number of discarded volumes: GNG-2,LSM/WM-5,STORY-3.',...
-'\n8. Only the first full runs for LSM and WM will be analyzed at the first level.',...
-'\n8. STORY first-level template may need fixing.',...
-'\n10. Contrast manager module is not run.\n\n\n']);
-
-in = input('Do you accept these conditions? (y/n)  ','s');
-
-if in == 'y';
-
-
-mot = input('Please set maximum percent of motion-artifactual volumes per run (e.g., 20) ');
-acc = input('Please set the minimum GNG accuracy acceptable (0-1 range; e.g., .7) ');
-
-
+mot = 20;
+acc = .5; 
 
 
 n_T1 = 176;
@@ -69,21 +42,45 @@ GNGTR = 20000;
 
 disp('Loading spm modules from tkt_tools/BEAN/spmBatches');
 
+cd(dirh);
+%subj = dir2('*');
 
-[path1,file] = fileparts(spm_select(1,'dir','Please Select DICOM folder'));
+subj = num2str([1492; 1503; 1507; 1518; 1560; 1563; 1567; 1581; 1614; 1635; 1636; 1637; 1641; 1649]);
 
-%==========================================================================
-% Central Switch
-%==========================================================================
+for sub = 1:size(subj,1) % skipped 1487 (no T1), 
+    % 1492 (rchicor problem), 
+    % 1500 (no functional data)
+    % 1503 (rchiinc is empty [] for GNG_1 - need to figure out how spm fmri model spec. can deal with empty onset vector)
+    % 1507 same error as 1503
+    % 1511 has no complete T1 (might need to interpolate 1 scan - not sure which is missing)
+    % 1518 has no Gonogo3 log apparently
+    % 1543 has error: matlabbatch{1,3}.spm.spatial.coreg.estimate.ref{1,1} = ls([dep1 '/' m{h(v,1),1} '/s*.nii']);
+    % 1560 same error as 1503
+    % 1563 GNG_3 perfect performance
+    % 1567 same error as 1503
+    % 1581 same error as 1503
+    % 1614 same as error 1503
+    % 1622 csa = SiemensInfo(finfo); error
+    % 1635 same as error 1503
+    % 1636 same as error 1503
+    % 1637 same as error 1503
+    % 1641 same as error 1503
+    % 1649 same as error 1503
+    % 1679-1690 no T1s or functional data
 
-fprintf(['Please choose where you would like to begin processing:',...
-    '\n\n\t1. At the beginning',...
-    '\n\n\t2. After dicom separation',...
-    '\n\n\t3. After dicom conversion',...
-    '\n\n\t4. After parameter and run completion check',...
-    '\n\n\t5. After T1 pre-processing\n\n']);
+    
+%try
+    
+% dep1 = [dirh '/' subj(sub).name]; % source/destination
+% pull1 = ['/Volumes/dmc-nelson/Groups/LCN-Nelson-Gates/Groups/BCH/Data/MRI/5yr_PROVIDE/MRI' subj(sub).name]; % for selecting in-scanner GNG logs
+dep1 = [dirh '/' subj(sub,:)]; 
+pull1 = ['/Volumes/dmc-nelson/Groups/LCN-Nelson-Gates/Groups/BCH/Data/MRI/5yr_PROVIDE/MRI' subj(sub,:)]; 
 
-beg = input('Please enter number here: ');
+% [path1,file] = fileparts(spm_select(1,'dir','Please Select DICOM folder'));
+
+
+% functional data analysis only
+beg = 3; 
 
 
     
@@ -264,7 +261,11 @@ for i = 1:size(D,1)
     xn = 0;
     switch size(nii,1)
         case 1
-            n = 1;
+            if any(vertcat(strfind(D(i).name,'GNG'),strfind(D(i).name,'LSM'),strfind(D(i).name,'WM'),strfind(D(i).name,'STORY'))) == 1 & isdir(D(i).name) == 1
+                continue
+            else
+                n = 1;
+            end
         case n_GNG
             n = 1;
             xn = 1;
@@ -297,84 +298,25 @@ for i = 1:size(D,1)
     
 end
 
-
-xx = sortrows(xo);
+try
+    xx = sortrows(xo);
+catch
+    disp('presumably no GNG run')
+end
 
 clearvars i o beg
 
-beg = 4;
-save('currentWorkspace');
 end
-%==========================================================================
-%% T1 preprocessing
-%==========================================================================
-
-if beg == 4
-    
-cd(dep1)
-load('currentWorkspace');
-
-disp('Starting cat12 preprocessing...');
-
-%spm('defaults','fmri');
-%spm_jobman('initcfg');
-
-j = 0;
-
-for i = 1:size(m,1)
-    
-    if strfind(m{i,1},'MPRAGE') > 0
-        j = j + 1;
-        h(j,1) = i;
-        load(stepT1);
-        matlabbatch{1,1}.spm.tools.cat.estwrite.data{1,1} = ls([dep1 '/' m{i,1} '/s*.nii']);
-        try
-            spm_jobman('run',matlabbatch);
-        catch
-            disp('Probably a display problem with cat12');
-        end
-    end
-    clearvars matlabbatch
-
-end
-
-% inspect T1s and select best for subsequent coregistration
-if j > 1
-    for f = 1:size(h,1)
-        G{f,:} = ls([dep1 '/' m{h(f,1),1} '/s*.nii']);
-    end
-    
-    spm_check_registration(char(G{:,1}));
-    v = input('Which T1 is the best quality?  #');
-elseif j == 1
-    v = 1;
-else
-    error('Error: No T1 image. Coregistration not possible.');
-end
-
-% send copy to neuroradiologist?
-co = input('Would you like to send a copy of the (better) T1 to the neuroradiologist? (y/n) ','s'); 
-if co == 'y'
-    sub = input('Please provide a subject ID without spaces: ','s');
-    orig = strtrim(ls([dep1 '/' m{h(v,1),1} '/s*.nii']));
-    copyfile(orig,[dep2 '/' sub '_T1_MPRAGE.nii'],'f');
-    disp(['Now copying file from ' orig ' to ' dep2 '...Please email the neuroradiologist',...
-        'and inform her that the next subject is ready for inspection.']);
-end
-    
-
-clearvars f G j beg
 
 beg = 5;
-save('currentWorkspace');
-end
+
 %==========================================================================
 %% EPI preprocessing 
 %==========================================================================
 if beg == 5
 
 cd(dep1);
-load('currentWorkspace');
+load('currentWorkspace','h','v');
 
 disp('Setting EPI preprocessing parameters...');
 
@@ -429,7 +371,7 @@ for ii = 1:n_img
 end
  
 % realignment, coregistration, vbm, deformation, and smoothing
-matlabbatch{1,3}.spm.spatial.coreg.estimate.ref{1,1} = ls([dep1 '/' m{h(v,1),1} '/s*.nii']);
+matlabbatch{1,3}.spm.spatial.coreg.estimate.ref{1,1} = ls([dep1 '/' m{h(v,1),1} '/s*.nii']); 
 matlabbatch{1,3}.spm.spatial.coreg.estimate.source{1,1} = [dep1 '/' m{i,1} '/meana' E(disc+1).name];
 matlabbatch{1,4}.spm.util.defs.comp{1,1}.def{1,1} = ls([dep1 '/' m{h(v,1),1} '/mri/y_*']);
 
@@ -469,6 +411,8 @@ global M;
 R = [ M{1} matreg g ];
 
 save([dep1 '/' m{i,1} '/multipleRegressFile.mat'],'R');
+movefile('BadScanList_1.5_0.75.csv',[m{i,1} '_BadScanList_1.5_0.75.csv']);
+
 clearvars M matreg g scanDir
 %==========================================================================
 % building GNG onsets file
@@ -484,7 +428,19 @@ if strfind(m{i,1},'GNG') > 0
         'run labeled ' m{i,1} '. Please select the corresponding GNG ',...
         'log xls(x) file.']);
 
-    perf = spm_select(1,'^.*\.xls*',['This is run ' m{i,1} '. Please select the corresponding log xls(x) file.']);
+    %perf = spm_select(1,'^.*\.xls*',['This is run ' m{i,1} '. Please select the corresponding log xls(x) file.'],[],pull1);
+    
+    if strfind(m{i,1},'1') > 0; 
+        perf = strtrim(ls([pull1 '/*Gonogo_1*.xls'])); 
+    elseif strfind(m{i,1},'2') > 0; 
+        perf = strtrim(ls([pull1 '/*Gonogo_2*.xls'])); 
+    elseif strfind(m{i,1},'3') > 0; 
+        perf = strtrim(ls([pull1 '/*Gonogo_3*.xls'])); 
+    else
+        disp('problem with gng log');
+    end; 
+    disp(perf);
+    
     
     [nm,tx,rw] = xlsread(perf);
     idx = find(strcmp(tx(:,1), 'Event Type'));
@@ -650,11 +606,6 @@ if strfind(m{i,1},'GNG') > 0
     accNoGo(i,1) = size(rhencor{i},1)/(size(rhencor{i},1) + size(rheninc{i},1));
     accAll(i,1) = (size(rchicor{i},1) + size(rhencor{i},1))/(size(rchicor{i},1) + size(rchiinc{i},1) + size(rhencor{i},1) + size(rheninc{i},1));
     
-    
-%     superGo(i,1) = sum(superpress_ch,1);
-%     superNoGo(i,1) = sum(superpress_hen,1);
-%     superAll(i,1) = superGo(i,1) + superNoGo(i,1);
-    
     mChRspf(i,1) = mean(chrspf,1)/10; % need to get it into ms
     mChRspl(i,1) = mean(chrspl,1)/10; 
     mAvgChRsp(i,1) = mean(avg_chrsp,1)/10;
@@ -667,6 +618,7 @@ if strfind(m{i,1},'GNG') > 0
     superNoGo(i,1) = 999;
     end
     superAll(i,1) = superGo(i,1) + superNoGo(i,1);
+
        
     % build performance summary table to export
 
@@ -711,50 +663,33 @@ H{4,:} = ls([dep1 '/' m{i,1} '/swraf*00050*.nii']); % warped, smoothed func
 H{5,:} = ls([dep1 '/' m{h(v,1),1} '/s*.nii']); % native struct
 H{6,:} = ls([dep1 '/' m{i,1} '/f*00050*.nii']); % native func
 
-spm_check_registration(char(H{:,1}));
-z = input('Was pre-processing successful? (y/n)  ','s');
+%spm_check_registration(char(H{:,1}));
 
-if z == 'y'
-    disp('Pre-processing sufficient.')
-else
-    disp('Pre-processing insufficient.')
-end
+z = 'y';
+
 
 % is motion threshold met?
 if mot >= str2double(pmvscans)
     disp(['Motion at ' pmvscans '%. Motion standard of ' num2str(mot) ' met.'])
+
+    if pf == 1;
+        if acc <= accAll(j,:) && accNoGo(j,:) ~= 1   % accGo(j,:) || acc <= accNoGo(j,:)
+            disp('The accuracy of Go and NoGo trials meets the minimum standard.');
+            q(i,1) = 1;
+        else
+            disp('The accuracy of Go and NoGo trials does not meet the minimum standard.');
+            q(i,1) = 0;
+        end
+    else
+        q(i,1) = 1;
+    end
 else
     disp(['Motion at ' pmvscans '%. Motion standard of ' num2str(mot) ' not met.'])
-end
-
-
-% is accuracy threshold met for Go/NoGo?
-if pf == 1;  
-
-if acc <= accGo(j,:)
-    disp('The accuracy of Go trials meets the minimum standard.')
-else
-    disp('The accuracy of Go trials does not meet the minimum standard.');
-end
-
-if acc <= accNoGo(j,:)
-    disp('The accuracy of noGo trials meets the minimum standard.')
-else
-    disp('The accuracy of noGo trials does not meet the minimum standard.');
-end
-
-end
-
-% decision time
-
-good = input(['Given the above data quality and pre-processing, would you like to ',...
-    'proceed with this run in first-level statistics? (y/n) '],'s');
-
-if good == 'y'
-    q(i,1) = 1;
-elseif good == 'n'
     q(i,1) = 0;
 end
+  
+
+
     
 %==========================================================================
 % first-level stats
@@ -884,11 +819,10 @@ end
 
 end
 
-
-
 end
-else
-    disp('Conditions not accepted. Script terminated');
+
+clearvars m
 end
+
 
 fprintf('\n\nProcessing complete! Please do not forget to update directory permissions and to email the neuroradiologist.')

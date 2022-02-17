@@ -1,4 +1,4 @@
-function y = cfmiartrepair_4BEAN(var1,var2,scanDir)
+function y = cfmiartrepair_4BEANinf(var1,var2)
 %%%% Writes out initial parameters
 % Taken from CFMI @ Georgetown University
 % Written by Kyle Shattuck
@@ -7,7 +7,7 @@ function y = cfmiartrepair_4BEAN(var1,var2,scanDir)
 %----- Edit Below
 
 perc=3; %%%% perc = cut-off of global signal percent
-mvmt=0.5;%%% mvmt = cut-off of movement in mm
+mvmt=0.5; %%% mvmt = cut-off of movement in mm
 
 %------
 
@@ -28,15 +28,15 @@ global RegressorType;
 RegressorType = var2; % input('Do you want regressors based on Global Signal (1), Movement (2), or Both (3): ');
 
 
-myfolder= scanDir; % spm_select(Inf,'dir','Select Scan Folders');
+myfolder= spm_select(Inf,'dir','Select Scan Folders');
 [m,n] = size(myfolder);
 
 for i=1:m
 currfolder=strtrim(myfolder(i,:));
-fnames=dir(fullfile(currfolder,'swr*.nii'));
+fnames=dir(fullfile(currfolder,'sw*.nii'));
 fnames=char(fnames.name);
 
-
+disp(currfolder);
 
 if (length(fnames(:,1) ~= 0))
 for ii=1:length(fnames(:,1));

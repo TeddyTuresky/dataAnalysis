@@ -7,16 +7,21 @@ fg_sn = fg; %need to label fiber outputs, probably need to delete for all the tr
 fg_sn.fibers = {};
 
 for i = 1:size(fg.fibers,1); 
-    gg = fg.fibers{i,1}'; 
-    x(i,1) = size(gg,1);
-    if exist('hg')==1; 
-        hg = vertcat(hg,gg); 
-    else
-        hg=gg;
-    end
-    
-    clearvars gg
+%     gg = fg.fibers{i,1}'; 
+%     x(i,1) = size(gg,1);
+%     if exist('hg')==1; 
+%         hg = vertcat(hg,gg); 
+%     else
+%         hg=gg;
+%     end
+%    clearvars gg
+
+    x(i,1) = size(fg.fibers{i,1},2);
 end
+
+hg = cat(2,fg.fibers{:,1})';
+
+
 idx = cumsum(x);
 
 

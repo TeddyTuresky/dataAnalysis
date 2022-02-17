@@ -1,4 +1,4 @@
-function y = cfmiartrepair_4BEAN(var1,var2,scanDir)
+function cfmiartrepair_4Banu(var1,var2,scanDir)
 %%%% Writes out initial parameters
 % Taken from CFMI @ Georgetown University
 % Written by Kyle Shattuck
@@ -33,7 +33,7 @@ myfolder= scanDir; % spm_select(Inf,'dir','Select Scan Folders');
 
 for i=1:m
 currfolder=strtrim(myfolder(i,:));
-fnames=dir(fullfile(currfolder,'swr*.nii'));
+fnames=dir(fullfile(currfolder,'r*.nii'));
 fnames=char(fnames.name);
 
 

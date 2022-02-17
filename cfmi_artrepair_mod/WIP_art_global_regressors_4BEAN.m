@@ -1,4 +1,4 @@
-function WIP_art_global_regressors_tkt(Images,RealignmentFile,Percent_thresh,mv_thresh,MakeRegressors)
+function WIP_art_global_regressors_4BEAN(Images,RealignmentFile,Percent_thresh,mv_thresh,MakeRegressors)
 % ----------------------------------------
 % Images: list of epi images to analyze
 %

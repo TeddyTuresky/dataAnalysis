@@ -1,12 +1,17 @@
-clearvars; close all; clc
-step = '/Volumes/FunTown/allAnalyses/BangRS/processing/03coregTemp.mat';
-subs = '/Volumes/FunTown/allAnalyses/BangRS/processing/sub_list.mat';
+clearvars; clc
+step = '/Volumes/DMC-Gaab2/data/Bangladesh/5yrProvide/spmBatches2/03coregTemp3WM.mat';
+subs = [1567 1581 1614 1622 1635 1636 1637 1641 1649];
 
 
-n_img = 201; % number of volumes to be sliced
+sub = num2str(subs');
 
 
-load(subs);
+%['1492'; '1503'; '1507'; '1510'; '1516'; '1525'; '1531'; '1532'; '1533';...
+%    '1545'; '1546'; '1563'; '1571'; '1591'; '1598'; '1605'; '1623'; '1626'; '1627'; '1647'];
+
+n_img = 59; % number of volumes to be sliced
+
+
 nsub = size(sub,1);
 
 

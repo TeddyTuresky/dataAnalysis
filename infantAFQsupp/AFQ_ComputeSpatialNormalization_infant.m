@@ -13,9 +13,16 @@ if AFQ_get(afq, 'use ANTS')
         dtFile = fullfile(sub_dirs{ii},'dt6.mat');
         dt     = dtiLoadDt6(dtFile);
         b0Path = fullfile(sub_dirs{ii},'bin');
-        t1File = dt.files.t1;   % fullfile(b0Path,'t1_acpc.nii.gz'); 
-        ANTS_N4_infant(t1File,b0Path);
-        ANTS_normalize_infant(b0Path,template);
+        t1File = dt.files.t1;   % fullfile(b0Path,'t1_acpc.nii.gz');
+        
+        if ~exist(fullfile(b0Path,'N4_t1_acpc.nii.gz')) ~= 0
+            ANTS_N4_infant(t1File,b0Path);
+        end 
+        
+        if ~exist(fullfile(b0Path,'t1_acpc1Warp.nii.gz')) ~= 0
+            ANTS_normalize_infant(b0Path,template);
+        end
+        
         warp = fullfile(sub_dirs{ii},'bin','t1_acpc1Warp.nii.gz');
         invwarp = fullfile(sub_dirs{ii},'bin','t1_acpc1InverseWarp.nii.gz');
         afq = AFQ_set(afq,'ants warp', warp, ii);
