@@ -9,9 +9,8 @@ nsub = size(sub,1);
 nscan = 195;
 
 BATCH.Setup.nsubjects = nsub;
-BATCH.Setup.RT = [2.31.*ones(17,1); 2.82.*ones(15,1)];
+BATCH.Setup.RT = [2.31.*ones(17,1); 2.82.*ones(15,1); X.*ones(13,1)]; % accounts for two different sequences (with different TRs)
 
-% D = dir2('/Volumes/FunTown/allAnalyses/BangRS/AnalysisData/*'); 
 k = num2str(sub);
 
 % BATCH.Setup.rois.names{1} = 'sensorimotor';
@@ -37,18 +36,13 @@ for i = 1:nsub
         BATCH.Setup.functionals{i}{1}{ii} = ['/Volumes/FunTown/allAnalyses/BangRS/AnalysisData3/' k(i,:) '/resting/' files(ii).name]; 
     end
     
-    %if ismember(str2num(sub(i,:)),[5218 5223 5224 5225]) == 0
     BATCH.Setup.masks.Grey{i} = ['/Volumes/FunTown/allAnalyses/BangRS/segs-rename2/' k(i,:) '/wgm-mask.nii'];
     BATCH.Setup.masks.White{i} = ['/Volumes/FunTown/allAnalyses/BangRS/segs-rename2/' k(i,:) '/wwm-mask.nii'];
     BATCH.Setup.masks.CSF{i} = ['/Volumes/FunTown/allAnalyses/BangRS/segs-rename2/' k(i,:) '/wcsf-mask.nii'];
-    %else
-    %BATCH.Setup.masks.Grey{i} = ['/Volumes/FunTown/allAnalyses/BangRS/segs-rename/3350/wgm-mask.nii'];
-    %BATCH.Setup.masks.White{i} = ['/Volumes/FunTown/allAnalyses/BangRS/segs-rename/3350/wwm-mask.nii'];
-    %BATCH.Setup.masks.CSF{i} = ['/Volumes/FunTown/allAnalyses/BangRS/segs-rename/3350/wcsf-mask.nii'];
-    %end
+
     
-    BATCH.Setup.covariates.files{1}{i}{1} = ['/Volumes/FunTown/allAnalyses/BangRS/AnalysisData3/' k(i,:) '/resting/rp_arest_011.txt'];
-    BATCH.Setup.covariates.files{2}{i}{1} = ['/Volumes/FunTown/allAnalyses/BangRS/AnalysisData3/' k(i,:) '/resting/BadScanRegressorArtFix_1_0.5.txt'];
+    BATCH.Setup.covariates.files{1}{i}{1} = ['/Volumes/FunTown/allAnalyses/BangRS/AnalysisData3/' k(i,:) '/resting/rp_arest_011.txt']; % output from realignment step in SPM
+    BATCH.Setup.covariates.files{2}{i}{1} = ['/Volumes/FunTown/allAnalyses/BangRS/AnalysisData3/' k(i,:) '/resting/BadScanRegressorArtFix_1_0.5.txt']; % output from cfmiArtRepair
 end
 
 

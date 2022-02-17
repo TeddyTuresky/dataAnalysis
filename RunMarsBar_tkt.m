@@ -34,7 +34,7 @@ for h = 1:length(hand);
         psc_all = []; % RH_psc_all = []; % [] stores an empty matrix
         % psc_hand = [];
 
-        roi_files = spm_get([0 Inf], '*roi.mat', 'Select ROIs to run');
+        roi_files = spm_select([0 Inf],[], 'Select ROIs to run');
         [rows cols] = size(roi_files);
 
         for i = 1:nsubs

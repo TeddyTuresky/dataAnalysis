@@ -17,11 +17,11 @@ clearvars; close all; clc;
 
 
 % inputs
-load('/Volumes/FunTown/allAnalyses/BangRS/processing/sub_list_fineTune.mat');
+load('/Volumes/FunTown/allAnalyses/BangRS/processing/sub_list_20200806.mat');
 nsub = size(sub,1);
-long = '/Volumes/FunTown/allAnalyses/BangRS/processing/connBang_PowerSpectra/results/preprocessing';
+long = '/Volumes/FunTown/allAnalyses/BangRS/processing/connBang_PowerSpectraLIMIHI/results/preprocessing';
 mask = '/Users/cinnamon/Documents/infantTemps/UNCInfant012Atlas_20140325/rinfant-neo-seg-gm.nii';
-segs = '/Volumes/FunTown/allAnalyses/BangRS/segs-rename2/';
+segs = '/Volumes/FunTown/allAnalyses/BangRS/all_struct2/';
 imask = 0; % switch between standard mask (0) and custom masks (1)
 
 
@@ -50,15 +50,15 @@ for i = 1:nsub
     
     % load individual gray matter masks and combine with standard mask
     switch imask % switch between standard mask and custom masks
+        case 0
+            amsk = mskl;
         case 1        
             g = load_untouch_nii([segs sub(i,:) '/rwgm-mask.nii']);
             gl = g.img > .99;
             gl(find(gl)) == 1;
-            nvmsk(i,:) = numel(find(gl));
+            % nvmsk(i,:) = numel(find(gl));
             amsk = times(mskl,gl);
-            nvamsk(i,:) = numel(find(amsk));
-        case 0
-            amsk = mskl;
+            % nvamsk(i,:) = numel(find(amsk));
     end
 
     
@@ -100,7 +100,7 @@ for i = 1:nsub
     k = num2str(i);
     
     % sampling frequencies are 1/TR
-    if i<18
+    if i<18 || i>32
         Fs = 1/2.31;
     else
         Fs = 1/2.82;
@@ -123,7 +123,7 @@ for i = 1:nsub
     rspxx(:,:,:,:,i) = reshape(uspxx(:,:),91,109,91,szp);
     n.hdr.dime.dim = [4 91 109 91 szp 1 1 1]; 
     n.img = rspxx(:,:,:,:,i);
-    save_untouch_nii(n,[long '/psd4d_' k '.nii']);
+    %save_untouch_nii(n,[long '/psd4d_' k '.nii']);
     
     clearvars rbr hp pxx spxx szp uspxx spxx
 
@@ -132,7 +132,7 @@ end
 sapxx = mean(apxx,2); % average power spectrum across subjects
 
 n.img = mean(rspxx,5);
-save_untouch_nii(n,[long '/average4dpower.nii']);
+%save_untouch_nii(n,[long '/average4dpower.nii']);
 
 
     

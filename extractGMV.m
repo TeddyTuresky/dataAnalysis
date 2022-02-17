@@ -9,14 +9,14 @@ clearvars; close all; clc;
 % gmv         - average gray matter volumes. Rows=subjects. Columns=rois
 
 % enter paths to gray matter maps and (binary) rois.
-gm_loc = '/Users/resky/Documents/data4EK';
-roi_loc = '/Users/resky/Documents/rois';
+gm_loc = '/Volumes/DMC-Gaab2/data/FHD/LanguageDelay2019/t1/Carolyn_2019/mri';
+roi_loc = '/Volumes/DMC-Gaab2/data/FHD/LanguageDelay2019/rois2';
 thres = .2; % set threshold for minimum gray matter intensity
 
 
 %==========================================================================
-Dg = dir2([gm_loc '/*']);
-Dr = dir2([roi_loc '/r*.nii']);
+Dg = dir2([gm_loc '/mwp1*.nii']);
+Dr = dir2([roi_loc '/rsphere*.nii']);
 
 for i = 1:size(Dr,1) % for each roi
     

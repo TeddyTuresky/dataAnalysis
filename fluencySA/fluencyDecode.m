@@ -46,11 +46,13 @@ du{1} = re((reg(1)+2):reg(2)-1);
 
 
 j = 1;
-for o = [21:26, 8, 9, 11:14]
+for o = [21:26, 8, 9, 11:14] % these numbers are adjusted for MODEL 2 (accurate + inaccurate trials)
     j = j+1;
-    if o == 26
-        on{7} = rd((reg(7)+1):tim(1)-1);
-        du{7} = re((reg(7)+1):tim(1)-1);
+    if o == 26 
+%         on{7} = rd((reg(7)+1):tim(1)-1);
+%         du{7} = re((reg(7)+1):tim(1)-1);
+        on{7} = rd((reg(26)+1):tim(1)-1);
+        du{7} = re((reg(26)+1):tim(1)-1);
     else        
         on{j} = rd((reg(o)+1):reg(o+1)-1);
         du{j} = re((reg(o)+1):reg(o+1)-1);
